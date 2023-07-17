@@ -1,12 +1,7 @@
 import subprocess
 import os
 import time
-commands = ['ping','127.0.0.1','-n','1']
-# print(subprocess.call(commands))
-# a = type(os.system('ipconfig'))
 from collections import defaultdict
-
-
 
 def run(cmd):
     cmd = cmd.split()
@@ -38,25 +33,26 @@ def multi_ping(ip:str,count=5,interval=1):
         time.sleep(interval)
     return latency_responses
 
- 
-google = 'www.google.com'
-def_gate = get_default_gateway()
+def multi_host_ping(hosts):
+    responses = defaultdict(list)
+    for i in range(3):
+        for ip in hosts:
+            responses[ip].append(ping_ip(ip)[2])
+        time.sleep(.3)
+    return responses
 
-addresses = [google,def_gate]
-responses = defaultdict(list)
-# for i in range(5):
-#     for ip in addresses:
-#         responses[ip].append(ping_ip(ip)[2])
-#     print([i for i in responses.values()])
-#     time.sleep(1)
-# print(multi_ping(def_gate))
-# print(multi_ping(google))
+def clear_screen() -> None:
+    os.system('cls')
 
+def print_responses(responses) -> None:
+    for host,responses in responses.items():
+        print(host,end=': ')
+        for response in responses:
+            print(response,end=' ')
+            # ...
+        print()
 
-# print(ping_ip('www.google.com'))
-# print(ping_ip('www.dashasdhads.com'))
-if True:
-    # mockup
+def print_mockup() -> None:
     print('''
                 last 5                  total
                 avg    loss   jitter    avg    packetloss   jitter
@@ -67,3 +63,16 @@ if True:
     google  - 30 30 30 31 33 30 29
 
         ''')
+    
+def main():
+    google = 'www.google.com'
+    def_gate = get_default_gateway()
+    hosts = [google,def_gate]
+    responses = multi_host_ping(hosts)
+    print_responses(responses)
+
+
+if __name__ == '__main__':
+    main()
+    # print_mockup()
+    # clear_screen()
